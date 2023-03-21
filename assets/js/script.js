@@ -19,7 +19,32 @@ async function postForm(e) {
     },
     body: form,
   });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    displayErrors(data);
+  } else {
+    throw new Error(data.error);
+  }
 }
+
+function displayErrors(data) {
+    let heading = `JSHint Results for ${data.file}`;
+
+    if (data.total_errors === 0) {
+        results = `<div class="no_errors">No errors reported!</div>`;
+    } else {
+        results = `<div>Total errors: <span class="error_content">${data.total_errors}</span></div>`;
+        for (let error of data.error_list) {
+            results += `<div>At line <span class="line">${error.line}</span>,`;
+            results += `column <span class="column">${error.col}</span></div>`;
+            results += `<div class="error">${error.error}</div>`;
+        }
+    }
+    
+}
+
 
 async function getStatus(e) {
   const queryString = `${API_URL}?api_key=${API_KEY}`;
